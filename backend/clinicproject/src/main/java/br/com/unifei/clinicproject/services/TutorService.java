@@ -2,13 +2,17 @@ package br.com.unifei.clinicproject.services;
 
 import br.com.unifei.clinicproject.dtos.request.TutorFilterRequest;
 import br.com.unifei.clinicproject.dtos.request.TutorRequest;
+import br.com.unifei.clinicproject.dtos.request.TutorUpdateRequest;
 import br.com.unifei.clinicproject.dtos.response.TutorResponse;
 import br.com.unifei.clinicproject.entities.TutorEntity;
+import br.com.unifei.clinicproject.entities.UserEntity;
 import br.com.unifei.clinicproject.enums.UserRole;
 import br.com.unifei.clinicproject.mappers.TutorMapper;
 import br.com.unifei.clinicproject.repositories.TutorRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.transaction.Transactional;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -84,5 +88,51 @@ public class TutorService {
         };
 
     return repository.findAll(spec, sort).stream().map(mapper::toResponseDTO).toList();
+  }
+
+  public TutorEntity updateTutor(String userId, TutorUpdateRequest dto, String adminId) {
+    TutorEntity user =
+        repository
+            .findById(userId)
+            .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado"));
+
+    if (dto.getEmail() != null && repository.existsByEmailAndIdNot(dto.getEmail(), userId)) {
+      throw new IllegalArgumentException("E-mail já está em uso por outro funcionário");
+    }
+
+    mapper.updateEntityFromDto(dto, user);
+
+    if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
+      user.setPassword(encoder.encode(dto.getPassword()));
+    }
+
+    user.setLastModifiedDate(OffsetDateTime.now());
+    user.setLastModifiedBy(adminId);
+
+    return repository.save(user);
+  }
+
+  @Transactional
+  public void deleteTutor(String userId) {
+    TutorEntity user =
+        repository
+            .findById(userId)
+            .orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
+
+    repository.delete(user);
+
+    // todo RELEASE 03
+    //      boolean temAgendamentosFuturos = agendamentoRepository
+    //              .existsByFuncionarioIdAndDataAfter(id, LocalDate.now());
+
+    //      if (temAgendamentosFuturos) {
+    //          // apenas desativa
+    //          user.setAtivo(false);
+    //          user.setDataUltimaAlteracao(LocalDateTime.now());
+    //          user.setResponsavelUltimaAlteracao(adminId);
+    //          userRepository.save(user);
+    //      } else {
+    //          userRepository.delete(user);
+    //      }
   }
 }

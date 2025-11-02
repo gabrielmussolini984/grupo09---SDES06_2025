@@ -13,8 +13,6 @@ public interface TutorRepository
   Optional<TutorEntity> findByEmail(String email);
 
   Optional<TutorEntity> findByCpf(String cpf);
-//
-//  Optional<TutorEntity> findByUsername(String username);
-//
-//  boolean existsByEmailAndIdNot(String email, String id);
+
+  boolean existsByEmailAndIdNot(String email, String id);
 }

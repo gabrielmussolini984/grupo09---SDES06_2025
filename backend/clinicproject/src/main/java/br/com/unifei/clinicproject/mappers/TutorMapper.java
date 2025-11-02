@@ -1,6 +1,8 @@
 package br.com.unifei.clinicproject.mappers;
 
 import br.com.unifei.clinicproject.dtos.request.TutorRequest;
+import br.com.unifei.clinicproject.dtos.request.TutorUpdateRequest;
+import br.com.unifei.clinicproject.dtos.request.UserUpdateRequest;
 import br.com.unifei.clinicproject.dtos.response.TutorResponse;
 import br.com.unifei.clinicproject.entities.TutorEntity;
 import org.mapstruct.*;
@@ -16,4 +18,7 @@ public interface TutorMapper {
   TutorEntity toEntity(TutorRequest dto);
 
   TutorResponse toResponseDTO(TutorEntity entity);
+
+  @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+  void updateEntityFromDto(TutorUpdateRequest dto, @MappingTarget TutorEntity entity);
 }
