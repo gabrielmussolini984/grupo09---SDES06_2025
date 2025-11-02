@@ -15,4 +15,6 @@ public interface UserRepository
   Optional<UserEntity> findByCpf(String cpf);
 
   Optional<UserEntity> findByUsername(String username);
+
+  boolean existsByEmailAndIdNot(String email, String id);
 }

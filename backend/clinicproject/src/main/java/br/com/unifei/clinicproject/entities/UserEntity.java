@@ -4,6 +4,7 @@ import enums.UserRole;
 import jakarta.persistence.*;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
 
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
@@ -52,4 +53,17 @@ public class UserEntity {
 
   @Column(name = "PASSWORD", nullable = false, length = 100)
   private String password;
+
+  @Column(name = "LAST_MODIFIED_DATE")
+  private OffsetDateTime lastModifiedDate;
+
+  @Column(name = "LAST_MODIFIED_BY")
+  private String lastModifiedBy;
+
+  @Column(name = "ACTIVE", nullable = false)
+  private boolean active = true;
+
+  // todo to implement in the RELEASE 03
+  //  @OneToMany(mappedBy = "funcionario")
+  //  private List<Agendamento> agendamentos;
 }

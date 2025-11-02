@@ -2,7 +2,9 @@ package br.com.unifei.clinicproject.controllers;
 
 import br.com.unifei.clinicproject.dtos.request.UserFilterRequest;
 import br.com.unifei.clinicproject.dtos.request.UserRequest;
+import br.com.unifei.clinicproject.dtos.request.UserUpdateRequest;
 import br.com.unifei.clinicproject.dtos.response.UserResponse;
+import br.com.unifei.clinicproject.entities.UserEntity;
 import br.com.unifei.clinicproject.services.UserService;
 import enums.UserRole;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -57,5 +59,21 @@ public class UserController {
     if (admissionEnd != null) filter.setAdmissionEnd(LocalDate.parse(admissionEnd));
 
     return userService.findByFilters(filter, orderBy);
+  }
+
+  @PutMapping("/{id}")
+  public UserEntity updateUser(
+      @PathVariable String id,
+      @RequestBody @Valid UserUpdateRequest dto,
+      @Parameter(description = "ID do administrador responsável pela edição") @RequestParam
+          String adminId) {
+    return userService.updateUser(id, dto, adminId);
+  }
+
+  @DeleteMapping("/{id}")
+  public ResponseEntity<Void> deleteUser(@PathVariable String id) {
+
+    userService.deleteUser(id);
+    return ResponseEntity.noContent().build();
   }
 }
