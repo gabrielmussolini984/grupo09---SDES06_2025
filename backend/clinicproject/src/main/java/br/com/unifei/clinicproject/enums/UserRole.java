@@ -1,4 +1,4 @@
-package enums;
+package br.com.unifei.clinicproject.enums;
 
 import java.util.Arrays;
 

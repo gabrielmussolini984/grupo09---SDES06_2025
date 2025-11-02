@@ -1,8 +1,8 @@
 package br.com.unifei.clinicproject.entities;
 
-import enums.UserRole;
+import br.com.unifei.clinicproject.enums.UserRole;
 import jakarta.persistence.*;
-import java.time.Instant;
+
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 

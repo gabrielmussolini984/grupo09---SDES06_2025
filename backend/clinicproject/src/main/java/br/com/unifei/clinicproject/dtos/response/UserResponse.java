@@ -1,6 +1,6 @@
 package br.com.unifei.clinicproject.dtos.response;
 
-import enums.UserRole;
+import br.com.unifei.clinicproject.enums.UserRole;
 import lombok.Data;
 
 import java.time.LocalDate;

@@ -6,7 +6,7 @@ import br.com.unifei.clinicproject.dtos.request.UserUpdateRequest;
 import br.com.unifei.clinicproject.dtos.response.UserResponse;
 import br.com.unifei.clinicproject.entities.UserEntity;
 import br.com.unifei.clinicproject.services.UserService;
-import enums.UserRole;
+import br.com.unifei.clinicproject.enums.UserRole;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;

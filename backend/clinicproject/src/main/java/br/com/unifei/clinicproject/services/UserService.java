@@ -7,7 +7,7 @@ import br.com.unifei.clinicproject.dtos.response.UserResponse;
 import br.com.unifei.clinicproject.entities.UserEntity;
 import br.com.unifei.clinicproject.mappers.UserMapper;
 import br.com.unifei.clinicproject.repositories.UserRepository;
-import enums.UserRole;
+import br.com.unifei.clinicproject.enums.UserRole;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.transaction.Transactional;

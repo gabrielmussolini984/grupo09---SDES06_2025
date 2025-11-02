@@ -1,6 +1,6 @@
 package br.com.unifei.clinicproject.dtos.request;
 
-import enums.UserRole;
+import br.com.unifei.clinicproject.enums.UserRole;
 import java.time.LocalDate;
 
 import jakarta.validation.constraints.Email;
