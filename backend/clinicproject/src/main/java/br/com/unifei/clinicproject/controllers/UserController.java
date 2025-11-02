@@ -52,8 +52,6 @@ public class UserController {
     filter.setName(name);
     filter.setCpf(cpf);
 
-    UserRole.toArray();
-
     if (role != null) filter.setRole(Enum.valueOf(UserRole.class, role.toUpperCase()));
     if (admissionStart != null) filter.setAdmissionStart(LocalDate.parse(admissionStart));
     if (admissionEnd != null) filter.setAdmissionEnd(LocalDate.parse(admissionEnd));

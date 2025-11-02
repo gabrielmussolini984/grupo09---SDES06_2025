@@ -5,7 +5,8 @@ import java.util.Arrays;
 public enum UserRole {
   ATENDENTE,
   VETERINARIO,
-  ADMINISTRADOR;
+  ADMINISTRADOR,
+  TUTOR;
 
   public static String[] toArray() {
     return Arrays.stream(UserRole.values()).map(Enum::toString).toArray(String[]::new);

@@ -13,13 +13,12 @@ import org.hibernate.annotations.GenericGenerator;
 @Data
 @Entity
 @Table(
-    name = "USERS",
+    name = "TUTOR",
     uniqueConstraints = {
       @UniqueConstraint(columnNames = "CPF"),
       @UniqueConstraint(columnNames = "EMAIL"),
-      @UniqueConstraint(columnNames = "USERNAME")
     })
-public class UserEntity {
+public class TutorEntity {
 
   @Id
   @GeneratedValue(generator = "uuid")
@@ -39,15 +38,15 @@ public class UserEntity {
   @Column(name = "PHONE", nullable = false, length = 15)
   private String phone;
 
+  @Column(name = "ADDRESS", nullable = false, length = 100)
+  private String address;
+
   @Enumerated(EnumType.STRING)
   @Column(name = "ROLE", nullable = false)
   private UserRole role;
 
-  @Column(name = "ADMISSION_DATE", nullable = false)
-  private LocalDate admissionDate;
-
-  @Column(name = "USERNAME", nullable = false, length = 30, unique = true)
-  private String username;
+  @Column(name = "BIRTH_DATE")
+  private LocalDate birthDate;
 
   @Column(name = "PASSWORD", nullable = false, length = 100)
   private String password;
@@ -62,10 +61,7 @@ public class UserEntity {
   @Column(name = "CREATED_DATE")
   private OffsetDateTime createdDate = OffsetDateTime.now();
 
+  @Builder.Default
   @Column(name = "ACTIVE", nullable = false)
   private boolean active = true;
-
-  // todo to implement in the RELEASE 03
-  //  @OneToMany(mappedBy = "funcionario")
-  //  private List<Agendamento> agendamentos;
 }
