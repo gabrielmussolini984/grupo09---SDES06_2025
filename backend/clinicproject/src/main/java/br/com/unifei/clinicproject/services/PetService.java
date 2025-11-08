@@ -1,12 +1,14 @@
 package br.com.unifei.clinicproject.services;
 
 import br.com.unifei.clinicproject.dtos.request.PetCreateRequest;
+import br.com.unifei.clinicproject.dtos.request.PetUpdateRequest;
 import br.com.unifei.clinicproject.dtos.response.PetResponse;
 import br.com.unifei.clinicproject.entities.PetEntity;
 import br.com.unifei.clinicproject.entities.TutorEntity;
 import br.com.unifei.clinicproject.mappers.PetMapper;
 import br.com.unifei.clinicproject.repositories.PetRepository;
 import br.com.unifei.clinicproject.repositories.TutorRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.criteria.Predicate;
 import java.util.ArrayList;
 import java.util.List;
@@ -79,5 +81,35 @@ public class PetService {
         };
 
     return petRepository.findAll(spec, sort).stream().map(petMapper::toResponseDto).toList();
+  }
+
+  public PetResponse updatePet(String id, PetUpdateRequest dto) {
+    PetEntity pet =
+        petRepository
+            .findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("Pet not found with id: " + id));
+
+    if (dto.getWeight() != null) pet.setWeight(dto.getWeight());
+
+    if (dto.getColor() != null && !dto.getColor().isBlank()) pet.setColor(dto.getColor());
+
+    if (dto.getNotes() != null) pet.setNotes(dto.getNotes());
+
+    PetEntity saved = petRepository.save(pet);
+    return petMapper.toResponseDto(saved);
+  }
+
+  public void deletePet(String id) {
+    // Only ADMINISTRATOR can delete
+    //        if (!"ADMINISTRADOR".equalsIgnoreCase(requesterRole)) {
+    //            throw new AccessDeniedException("Only administrators can delete pets.");
+    //        }
+
+    PetEntity pet =
+        petRepository
+            .findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("Pet not found with id: " + id));
+
+    petRepository.delete(pet);
   }
 }

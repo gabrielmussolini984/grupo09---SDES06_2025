@@ -16,4 +16,5 @@ public class PetResponse {
   private String tutorName;
   private String tutorCpf;
   private BigDecimal weight;
+  private String notes;
 }

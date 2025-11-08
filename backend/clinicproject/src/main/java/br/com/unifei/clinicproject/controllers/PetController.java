@@ -1,6 +1,7 @@
 package br.com.unifei.clinicproject.controllers;
 
 import br.com.unifei.clinicproject.dtos.request.PetCreateRequest;
+import br.com.unifei.clinicproject.dtos.request.PetUpdateRequest;
 import br.com.unifei.clinicproject.dtos.response.PetResponse;
 import br.com.unifei.clinicproject.services.PetService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -44,5 +45,20 @@ public class PetController {
     List<PetResponse> result =
         petService.findPets(name, species, breed, ownerName, ownerCpf, sortBy);
     return ResponseEntity.ok(result);
+  }
+
+  @PatchMapping("/{id}")
+  public ResponseEntity<PetResponse> updatePet(
+      @PathVariable String id, @RequestBody PetUpdateRequest dto) {
+
+    PetResponse updated = petService.updatePet(id, dto);
+    return ResponseEntity.ok(updated);
+  }
+
+  @DeleteMapping("/{id}")
+  public ResponseEntity<Void> deleteTutor(@PathVariable String id) {
+
+    petService.deletePet(id);
+    return ResponseEntity.noContent().build();
   }
 }
