@@ -4,6 +4,9 @@ import br.com.unifei.clinicproject.enums.UserRole;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -64,4 +67,7 @@ public class TutorEntity {
   @Builder.Default
   @Column(name = "ACTIVE", nullable = false)
   private boolean active = true;
+
+  @OneToMany(mappedBy = "tutor")
+  private List<PetEntity> pets = new ArrayList<>();
 }
