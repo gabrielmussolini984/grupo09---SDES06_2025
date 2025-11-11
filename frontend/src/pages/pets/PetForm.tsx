@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Loader2, Upload, X } from 'lucide-react';
+import { ArrowLeft, Loader2 } from 'lucide-react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/components/ui/button';
@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+
 import { toast } from 'sonner';
 import { petSchema, type PetFormData } from '@/lib/validators';
 import { mockPetsApi, getTutores } from '@/lib/mockApi';
@@ -23,7 +23,6 @@ const PetForm = () => {
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(isEdit);
   const [tutores, setTutores] = useState<User[]>([]);
-  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   
   const {
     register,
@@ -71,11 +70,7 @@ const PetForm = () => {
       setValue('pesoAtual', pet.pesoAtual);
       setValue('tutorId', pet.tutorId);
       if (pet.observacoes) setValue('observacoes', pet.observacoes);
-      if (pet.fotoUrl) {
-        setValue('fotoUrl', pet.fotoUrl);
-        setPhotoPreview(pet.fotoUrl);
-      }
-    } catch (error: any) {
+    } catch (error) {
       toast.error(error.message || 'Erro ao carregar pet');
       navigate('/pets');
     } finally {
@@ -83,50 +78,21 @@ const PetForm = () => {
     }
   };
 
-  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    
-    // Validate file size (5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error('Imagem deve ter no máximo 5MB');
-      return;
-    }
-    
-    // Validate file type
-    if (!file.type.startsWith('image/')) {
-      toast.error('Arquivo deve ser uma imagem');
-      return;
-    }
-    
-    // Create preview
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setPhotoPreview(reader.result as string);
-      setValue('fotoUrl', reader.result as string);
-    };
-    reader.readAsDataURL(file);
-  };
-
-  const removePhoto = () => {
-    setPhotoPreview(null);
-    setValue('fotoUrl', undefined);
-  };
 
   const onSubmit = async (data: PetFormData) => {
     try {
       setLoading(true);
       
       if (isEdit && id) {
-        await mockPetsApi.update(id, data as any);
+        await mockPetsApi.update(id, data);
         toast.success('Pet atualizado com sucesso');
       } else {
-        await mockPetsApi.create(data as any);
+        await mockPetsApi.create(data);
         toast.success('Pet cadastrado com sucesso');
       }
       
       navigate('/pets');
-    } catch (error: any) {
+    } catch (error) {
       toast.error(error.message || 'Erro ao salvar pet');
     } finally {
       setLoading(false);
@@ -161,52 +127,6 @@ const PetForm = () => {
       {/* Form */}
       <Card className="p-6">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          {/* Photo Upload */}
-          <div className="space-y-2">
-            <Label>Foto do Pet</Label>
-            <div className="flex items-center gap-4">
-              <Avatar className="h-24 w-24">
-                <AvatarImage src={photoPreview || undefined} />
-                <AvatarFallback className="bg-primary/10 text-2xl text-primary">
-                  🐾
-                </AvatarFallback>
-              </Avatar>
-              
-              <div className="flex gap-2">
-                <label htmlFor="photo-upload">
-                  <Button type="button" variant="outline" size="sm" asChild>
-                    <span className="cursor-pointer">
-                      <Upload className="mr-2 h-4 w-4" />
-                      Selecionar Foto
-                    </span>
-                  </Button>
-                </label>
-                <input
-                  id="photo-upload"
-                  type="file"
-                  accept="image/*"
-                  onChange={handlePhotoChange}
-                  className="hidden"
-                />
-                
-                {photoPreview && (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={removePhoto}
-                  >
-                    <X className="mr-2 h-4 w-4" />
-                    Remover
-                  </Button>
-                )}
-              </div>
-            </div>
-            <p className="text-xs text-muted-foreground">
-              JPG, PNG ou WEBP. Máximo 5MB.
-            </p>
-          </div>
-
           {/* Nome and Espécie */}
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">

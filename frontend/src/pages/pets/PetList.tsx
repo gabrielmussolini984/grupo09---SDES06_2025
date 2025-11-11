@@ -24,10 +24,11 @@ const PetList = () => {
   const [speciesFilter, setSpeciesFilter] = useState<PetSpecies | 'ALL'>('ALL');
   const [breedFilter, setBreedFilter] = useState('');
   const [ownerFilter, setOwnerFilter] = useState('');
+  const [ownerCpfFilter, setOwnerCpfFilter] = useState('');
 
   useEffect(() => {
     loadPets();
-  }, [nameFilter, speciesFilter, breedFilter, ownerFilter]);
+  }, [nameFilter, speciesFilter, breedFilter, ownerFilter, ownerCpfFilter]);
 
   const loadPets = async () => {
     try {
@@ -37,6 +38,7 @@ const PetList = () => {
         especie: speciesFilter !== 'ALL' ? speciesFilter : undefined,
         raca: breedFilter,
         tutorNome: ownerFilter,
+        tutorCpf: ownerCpfFilter,
       });
       setPets(response.data);
     } catch (error) {
@@ -91,7 +93,7 @@ const PetList = () => {
 
       {/* Filters */}
       <Card className="p-4">
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
           <div className="relative">
             <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
             <Input
@@ -127,6 +129,12 @@ const PetList = () => {
             placeholder="Nome do tutor..."
             value={ownerFilter}
             onChange={(e) => setOwnerFilter(e.target.value)}
+          />
+          
+          <Input
+            placeholder="CPF do tutor..."
+            value={ownerCpfFilter}
+            onChange={(e) => setOwnerCpfFilter(e.target.value)}
           />
         </div>
       </Card>
