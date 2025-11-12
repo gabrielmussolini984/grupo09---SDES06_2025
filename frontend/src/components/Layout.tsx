@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Users, PawPrint, Home } from 'lucide-react';
+import { Users, PawPrint, Home, UserCheck } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
@@ -9,6 +9,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     { name: 'Início', href: '/', icon: Home },
     { name: 'Usuários', href: '/usuarios', icon: Users },
     { name: 'Pets', href: '/pets', icon: PawPrint },
+    { name: 'Tutores', href: '/tutores', icon: UserCheck },
   ];
 
   return (

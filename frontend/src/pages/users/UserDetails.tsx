@@ -28,7 +28,7 @@ const UserDetails = () => {
       setLoading(true);
       const data = await mockUsersApi.getById(userId);
       setUser(data);
-    } catch (error: any) {
+    } catch (error) {
       toast.error(error.message || 'Erro ao carregar usuário');
       navigate('/usuarios');
     } finally {
@@ -43,7 +43,7 @@ const UserDetails = () => {
       await mockUsersApi.delete(id);
       toast.success('Usuário inativado com sucesso');
       navigate('/usuarios');
-    } catch (error: any) {
+    } catch (error) {
       toast.error(error.message || 'Erro ao inativar usuário');
     } finally {
       setShowDeleteDialog(false);
@@ -123,7 +123,6 @@ const UserDetails = () => {
                 {user.cargo === 'VETERINARIO' && 'Veterinário'}
                 {user.cargo === 'ATENDENTE' && 'Atendente'}
                 {user.cargo === 'ADMINISTRADOR' && 'Administrador'}
-                {user.cargo === 'CLIENTE' && 'Cliente/Tutor'}
               </Badge>
             }
           />

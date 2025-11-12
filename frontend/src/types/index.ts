@@ -1,4 +1,4 @@
-export type UserRole = 'ATENDENTE' | 'VETERINARIO' | 'ADMINISTRADOR' | 'CLIENTE';
+export type UserRole = "ATENDENTE" | "VETERINARIO" | "ADMINISTRADOR";
 
 export interface User {
   id: string;
@@ -16,8 +16,14 @@ export interface User {
   atualizadoPor?: string;
 }
 
-export type PetSpecies = 'CACHORRO' | 'GATO' | 'COELHO' | 'AVE' | 'ROEDOR' | 'OUTRO';
-export type PetSex = 'MACHO' | 'FEMEA' | 'INDEFINIDO';
+export type PetSpecies =
+  | "CACHORRO"
+  | "GATO"
+  | "COELHO"
+  | "AVE"
+  | "ROEDOR"
+  | "OUTRO";
+export type PetSex = "MACHO" | "FEMEA" | "INDEFINIDO";
 
 export interface Pet {
   id: string;
