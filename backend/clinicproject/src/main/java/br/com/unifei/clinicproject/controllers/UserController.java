@@ -5,8 +5,8 @@ import br.com.unifei.clinicproject.dtos.request.UserRequest;
 import br.com.unifei.clinicproject.dtos.request.UserUpdateRequest;
 import br.com.unifei.clinicproject.dtos.response.UserResponse;
 import br.com.unifei.clinicproject.entities.UserEntity;
-import br.com.unifei.clinicproject.services.UserService;
 import br.com.unifei.clinicproject.enums.UserRole;
+import br.com.unifei.clinicproject.services.UserService;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -73,5 +73,11 @@ public class UserController {
 
     userService.deleteUser(id);
     return ResponseEntity.noContent().build();
+  }
+
+  @GetMapping("/{id}")
+  public ResponseEntity<UserResponse> getUserById(@PathVariable String id) {
+    UserResponse user = userService.findById(id);
+    return ResponseEntity.ok(user);
   }
 }

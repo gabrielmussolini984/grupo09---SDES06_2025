@@ -61,4 +61,10 @@ public class PetController {
     petService.deletePet(id);
     return ResponseEntity.noContent().build();
   }
+
+  @GetMapping("/{id}")
+  public ResponseEntity<PetResponse> getPetById(@PathVariable String id) {
+    PetResponse user = petService.findById(id);
+    return ResponseEntity.ok(user);
+  }
 }

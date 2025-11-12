@@ -4,6 +4,7 @@ import br.com.unifei.clinicproject.dtos.request.TutorFilterRequest;
 import br.com.unifei.clinicproject.dtos.request.TutorRequest;
 import br.com.unifei.clinicproject.dtos.request.TutorUpdateRequest;
 import br.com.unifei.clinicproject.dtos.response.TutorResponse;
+import br.com.unifei.clinicproject.dtos.response.UserResponse;
 import br.com.unifei.clinicproject.entities.TutorEntity;
 import br.com.unifei.clinicproject.entities.UserEntity;
 import br.com.unifei.clinicproject.enums.UserRole;
@@ -50,7 +51,6 @@ public class TutorService {
 
     TutorEntity user = mapper.toEntity(request);
     user.setPassword(encoder.encode(request.password()));
-    user.setRole(UserRole.TUTOR);
 
     repository.save(user);
   }
@@ -134,5 +134,14 @@ public class TutorService {
     //      } else {
     //          userRepository.delete(user);
     //      }
+  }
+
+  public TutorResponse findById(String id) {
+    TutorEntity user =
+        repository
+            .findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("Tutor not found with id: " + id));
+
+    return mapper.toResponseDTO(user);
   }
 }

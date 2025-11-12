@@ -44,10 +44,6 @@ public class TutorEntity {
   @Column(name = "ADDRESS", nullable = false, length = 100)
   private String address;
 
-  @Enumerated(EnumType.STRING)
-  @Column(name = "ROLE", nullable = false)
-  private UserRole role;
-
   @Column(name = "BIRTH_DATE")
   private LocalDate birthDate;
 

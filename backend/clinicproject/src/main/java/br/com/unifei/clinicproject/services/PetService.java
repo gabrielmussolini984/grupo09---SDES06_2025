@@ -3,6 +3,7 @@ package br.com.unifei.clinicproject.services;
 import br.com.unifei.clinicproject.dtos.request.PetCreateRequest;
 import br.com.unifei.clinicproject.dtos.request.PetUpdateRequest;
 import br.com.unifei.clinicproject.dtos.response.PetResponse;
+import br.com.unifei.clinicproject.dtos.response.TutorResponse;
 import br.com.unifei.clinicproject.entities.PetEntity;
 import br.com.unifei.clinicproject.entities.TutorEntity;
 import br.com.unifei.clinicproject.mappers.PetMapper;
@@ -111,5 +112,14 @@ public class PetService {
             .orElseThrow(() -> new EntityNotFoundException("Pet not found with id: " + id));
 
     petRepository.delete(pet);
+  }
+
+  public PetResponse findById(String id) {
+    PetEntity user =
+        petRepository
+            .findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("Pet not found with id: " + id));
+
+    return petMapper.toResponseDto(user);
   }
 }
