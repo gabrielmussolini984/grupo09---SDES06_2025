@@ -5,9 +5,9 @@ import br.com.unifei.clinicproject.dtos.request.UserRequest;
 import br.com.unifei.clinicproject.dtos.request.UserUpdateRequest;
 import br.com.unifei.clinicproject.dtos.response.UserResponse;
 import br.com.unifei.clinicproject.entities.UserEntity;
+import br.com.unifei.clinicproject.enums.UserRole;
 import br.com.unifei.clinicproject.mappers.UserMapper;
 import br.com.unifei.clinicproject.repositories.UserRepository;
-import br.com.unifei.clinicproject.enums.UserRole;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.transaction.Transactional;
@@ -156,5 +156,14 @@ public class UserService {
     //      } else {
     //          userRepository.delete(user);
     //      }
+  }
+
+  public UserResponse findById(String id) {
+    UserEntity user =
+        repository
+            .findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
+
+    return mapper.toResponseDTO(user);
   }
 }

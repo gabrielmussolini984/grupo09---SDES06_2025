@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @Data
 @Builder
@@ -17,4 +18,7 @@ public class PetResponse {
   private String tutorCpf;
   private BigDecimal weight;
   private String notes;
+  private String sex;
+  private LocalDate birthDate;
+  private String color;
 }

@@ -65,4 +65,10 @@ public class TutorController {
     tutorService.deleteTutor(id);
     return ResponseEntity.noContent().build();
   }
+
+  @GetMapping("/{id}")
+  public ResponseEntity<TutorResponse> getUserById(@PathVariable String id) {
+    TutorResponse user = tutorService.findById(id);
+    return ResponseEntity.ok(user);
+  }
 }

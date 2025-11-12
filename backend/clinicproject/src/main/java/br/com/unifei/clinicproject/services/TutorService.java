@@ -50,7 +50,6 @@ public class TutorService {
 
     TutorEntity user = mapper.toEntity(request);
     user.setPassword(encoder.encode(request.password()));
-    user.setRole(UserRole.TUTOR);
 
     repository.save(user);
   }
@@ -134,5 +133,14 @@ public class TutorService {
     //      } else {
     //          userRepository.delete(user);
     //      }
+  }
+
+  public TutorResponse findById(String id) {
+    TutorEntity user =
+        repository
+            .findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("Tutor not found with id: " + id));
+
+    return mapper.toResponseDTO(user);
   }
 }
