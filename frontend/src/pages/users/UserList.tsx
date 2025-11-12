@@ -1,27 +1,41 @@
-import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Plus, Search, Eye, Pencil, Trash2, Loader2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
-import { Card } from '@/components/ui/card';
-import { toast } from 'sonner';
-import { User, UserRole } from '@/types';
-import { mockUsersApi } from '@/lib/mockApi';
-import ConfirmDialog from '@/components/ConfirmDialog';
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { Plus, Search, Eye, Pencil, Trash2, Loader2, User } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { Card } from "@/components/ui/card";
+import { toast } from "sonner";
+import { UserRole } from "@/types";
+import ConfirmDialog from "@/components/ConfirmDialog";
+import { ListUserResponse, listUsers } from "@/lib/user/list";
+import { removeUser } from "@/lib/user/remove";
 
 const UserList = () => {
   const navigate = useNavigate();
-  const [users, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState<ListUserResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [deleteId, setDeleteId] = useState<string | null>(null);
-  
+
   // Filters
-  const [nameFilter, setNameFilter] = useState('');
-  const [cpfFilter, setCpfFilter] = useState('');
-  const [roleFilter, setRoleFilter] = useState<UserRole | 'ALL'>('ALL');
+  const [nameFilter, setNameFilter] = useState("");
+  const [cpfFilter, setCpfFilter] = useState("");
+  const [roleFilter, setRoleFilter] = useState<UserRole | "ALL">("ALL");
 
   useEffect(() => {
     loadUsers();
@@ -30,14 +44,14 @@ const UserList = () => {
   const loadUsers = async () => {
     try {
       setLoading(true);
-      const response = await mockUsersApi.list({
-        nome: nameFilter,
+      const response = await listUsers({
+        name: nameFilter,
         cpf: cpfFilter,
-        cargo: roleFilter !== 'ALL' ? roleFilter : undefined,
+        role: roleFilter !== "ALL" ? roleFilter : undefined,
       });
-      setUsers(response.data);
+      setUsers(response);
     } catch (error) {
-      toast.error('Erro ao carregar usuários');
+      toast.error("Erro ao carregar usuários");
       console.error(error);
     } finally {
       setLoading(false);
@@ -46,13 +60,13 @@ const UserList = () => {
 
   const handleDelete = async () => {
     if (!deleteId) return;
-    
+
     try {
-      await mockUsersApi.delete(deleteId);
-      toast.success('Usuário inativado com sucesso');
+      await removeUser(deleteId);
+      toast.success("Usuário inativado com sucesso");
       loadUsers();
-    } catch (error: any) {
-      toast.error(error.message || 'Erro ao inativar usuário');
+    } catch (error) {
+      toast.error(error.message || "Erro ao inativar usuário");
     } finally {
       setDeleteId(null);
     }
@@ -60,16 +74,22 @@ const UserList = () => {
 
   const getRoleBadge = (role: UserRole) => {
     const variants: Record<UserRole, { label: string; className: string }> = {
-      VETERINARIO: { label: 'Veterinário', className: 'bg-primary text-primary-foreground' },
-      ATENDENTE: { label: 'Atendente', className: 'bg-secondary text-secondary-foreground' },
-      ADMINISTRADOR: { label: 'Administrador', className: 'bg-purple-500 text-white' },
-      CLIENTE: { label: 'Cliente', className: 'bg-muted text-muted-foreground' },
+      VETERINARIO: {
+        label: "Veterinário",
+        className: "bg-primary text-primary-foreground",
+      },
+      ATENDENTE: {
+        label: "Atendente",
+        className: "bg-secondary text-secondary-foreground",
+      },
+      ADMINISTRADOR: {
+        label: "Administrador",
+        className: "bg-purple-500 text-white",
+      },
     };
-    
+
     return (
-      <Badge className={variants[role].className}>
-        {variants[role].label}
-      </Badge>
+      <Badge className={variants[role].className}>{variants[role].label}</Badge>
     );
   };
 
@@ -79,9 +99,11 @@ const UserList = () => {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-3xl font-bold">Usuários</h1>
-          <p className="text-muted-foreground">Gerencie funcionários e clientes</p>
+          <p className="text-muted-foreground">
+            Gerencie funcionários e clientes
+          </p>
         </div>
-        <Button onClick={() => navigate('/usuarios/novo')} className="gap-2">
+        <Button onClick={() => navigate("/usuarios/novo")} className="gap-2">
           <Plus className="h-4 w-4" />
           Novo Usuário
         </Button>
@@ -99,14 +121,17 @@ const UserList = () => {
               className="pl-9"
             />
           </div>
-          
+
           <Input
             placeholder="CPF (000.000.000-00)"
             value={cpfFilter}
             onChange={(e) => setCpfFilter(e.target.value)}
           />
-          
-          <Select value={roleFilter} onValueChange={(value) => setRoleFilter(value as UserRole | 'ALL')}>
+
+          <Select
+            value={roleFilter}
+            onValueChange={(value) => setRoleFilter(value as UserRole | "ALL")}
+          >
             <SelectTrigger>
               <SelectValue placeholder="Cargo" />
             </SelectTrigger>
@@ -115,10 +140,9 @@ const UserList = () => {
               <SelectItem value="VETERINARIO">Veterinário</SelectItem>
               <SelectItem value="ATENDENTE">Atendente</SelectItem>
               <SelectItem value="ADMINISTRADOR">Administrador</SelectItem>
-              <SelectItem value="CLIENTE">Cliente</SelectItem>
             </SelectContent>
           </Select>
-          
+
           <Button variant="outline" onClick={loadUsers}>
             Aplicar Filtros
           </Button>
@@ -145,41 +169,40 @@ const UserList = () => {
                   <TableHead>E-mail</TableHead>
                   <TableHead>Cargo</TableHead>
                   <TableHead>Data de Admissão</TableHead>
-                  <TableHead>Status</TableHead>
                   <TableHead className="text-right">Ações</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {users.map((user) => (
                   <TableRow key={user.id}>
-                    <TableCell className="font-medium">{user.nomeCompleto}</TableCell>
+                    <TableCell className="font-medium">{user.name}</TableCell>
                     <TableCell>{user.cpf}</TableCell>
                     <TableCell>{user.email}</TableCell>
-                    <TableCell>{getRoleBadge(user.cargo)}</TableCell>
+                    <TableCell>{getRoleBadge(user.role)}</TableCell>
                     <TableCell>
-                      {user.dataAdmissao
-                        ? new Date(user.dataAdmissao).toLocaleDateString('pt-BR')
-                        : '-'}
+                      {user.admissionDate
+                        ? new Date(user.admissionDate).toLocaleDateString(
+                            "pt-BR"
+                          )
+                        : "-"}
                     </TableCell>
-                    <TableCell>
-                      <Badge variant={user.ativo ? 'default' : 'secondary'}>
-                        {user.ativo ? 'Ativo' : 'Inativo'}
-                      </Badge>
-                    </TableCell>
+
                     <TableCell>
                       <div className="flex justify-end gap-2">
-                        <Button
+                        {/* <Button
                           variant="ghost"
                           size="icon"
                           onClick={() => navigate(`/usuarios/${user.id}`)}
                           title="Ver detalhes"
                         >
                           <Eye className="h-4 w-4" />
-                        </Button>
+                        </Button> */}
                         <Button
                           variant="ghost"
                           size="icon"
-                          onClick={() => navigate(`/usuarios/${user.id}/editar`)}
+                          onClick={() =>
+                            navigate(`/usuarios/${user.id}/editar`)
+                          }
                           title="Editar"
                         >
                           <Pencil className="h-4 w-4" />
@@ -189,7 +212,7 @@ const UserList = () => {
                           size="icon"
                           onClick={() => setDeleteId(user.id)}
                           title="Excluir"
-                          disabled={!user.ativo}
+                          disabled={user.role === 'ADMINISTRADOR'}
                         >
                           <Trash2 className="h-4 w-4 text-destructive" />
                         </Button>
@@ -207,9 +230,9 @@ const UserList = () => {
       <ConfirmDialog
         open={!!deleteId}
         onOpenChange={(open) => !open && setDeleteId(null)}
-        title="Inativar usuário"
-        description="Tem certeza que deseja inativar este usuário? O usuário será marcado como inativo mas seus dados serão preservados."
-        confirmText="Inativar"
+        title="Remover usuário"
+        description="Tem certeza que deseja remover este usuário? O usuário será excluído permanentemente e seus dados não poderão ser recuperados."
+        confirmText="Remover"
         onConfirm={handleDelete}
         variant="destructive"
       />

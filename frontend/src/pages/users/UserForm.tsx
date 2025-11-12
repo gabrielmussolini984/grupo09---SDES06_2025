@@ -1,26 +1,35 @@
-import { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Loader2 } from 'lucide-react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Card } from '@/components/ui/card';
-import { toast } from 'sonner';
-import { userSchema, type UserFormData } from '@/lib/validators';
-import { maskCPF, maskPhone } from '@/lib/masks';
-import { mockUsersApi } from '@/lib/mockApi';
+import { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { ArrowLeft, Loader2 } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Card } from "@/components/ui/card";
+import { toast } from "sonner";
+import { userSchema, type UserFormData } from "@/lib/validators";
+import { maskCPF, maskPhone } from "@/lib/masks";
+import { mockUsersApi } from "@/lib/mockApi";
+import { createUser } from "@/lib/user/create";
+import { updateUser } from "@/lib/user/update";
+import { UserRole } from "@/types";
 
 const UserForm = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const isEdit = !!id;
-  
+
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(isEdit);
-  
+
   const {
     register,
     handleSubmit,
@@ -30,12 +39,11 @@ const UserForm = () => {
   } = useForm<UserFormData>({
     resolver: zodResolver(userSchema),
     defaultValues: {
-      cargo: 'CLIENTE',
+      cargo: "ADMINISTRADOR",
     },
   });
 
-  const cargo = watch('cargo');
-  const isCliente = cargo === 'CLIENTE';
+  const cargo = watch("cargo");
 
   useEffect(() => {
     if (isEdit && id) {
@@ -47,18 +55,17 @@ const UserForm = () => {
     try {
       setInitialLoading(true);
       const user = await mockUsersApi.getById(userId);
-      
-      setValue('nomeCompleto', user.nomeCompleto);
-      setValue('cpf', user.cpf);
-      setValue('email', user.email);
-      setValue('telefone', user.telefone);
-      setValue('cargo', user.cargo);
-      if (user.dataAdmissao) setValue('dataAdmissao', user.dataAdmissao);
-      if (user.endereco) setValue('endereco', user.endereco);
-      if (user.dataNascimento) setValue('dataNascimento', user.dataNascimento);
-    } catch (error: any) {
-      toast.error(error.message || 'Erro ao carregar usuário');
-      navigate('/usuarios');
+      setValue("nomeCompleto", user.nomeCompleto);
+      setValue("cpf", user.cpf);
+      setValue("email", user.email);
+      setValue("telefone", user.telefone);
+      setValue("cargo", user.cargo);
+      if (user.dataAdmissao) setValue("dataAdmissao", user.dataAdmissao);
+      if (user.endereco) setValue("endereco", user.endereco);
+      if (user.dataNascimento) setValue("dataNascimento", user.dataNascimento);
+    } catch (error) {
+      toast.error(error.message || "Erro ao carregar usuário");
+      navigate("/usuarios");
     } finally {
       setInitialLoading(false);
     }
@@ -67,18 +74,33 @@ const UserForm = () => {
   const onSubmit = async (data: UserFormData) => {
     try {
       setLoading(true);
-      
+
       if (isEdit && id) {
-        await mockUsersApi.update(id, data);
-        toast.success('Usuário atualizado com sucesso');
+        await updateUser(+id, {
+          admissionDate: data.dataAdmissao,
+          email: data.email,
+          password: data.senha,
+          phone: data.telefone,
+          role: data.cargo,
+        });
+        toast.success("Usuário atualizado com sucesso");
       } else {
-        await mockUsersApi.create(data as any);
-        toast.success('Usuário cadastrado com sucesso');
+        await createUser({
+          admissionDate: data.dataAdmissao,
+          cpf: data.cpf,
+          email: data.email,
+          name: data.nomeCompleto,
+          phone: data.telefone,
+          role: data.cargo,
+          username: data.usuario,
+          password: data.senha,
+        });
+        toast.success("Usuário cadastrado com sucesso");
       }
-      
-      navigate('/usuarios');
-    } catch (error: any) {
-      toast.error(error.message || 'Erro ao salvar usuário');
+
+      navigate("/usuarios");
+    } catch (error) {
+      toast.error(error.message || "Erro ao salvar usuário");
     } finally {
       setLoading(false);
     }
@@ -96,15 +118,21 @@ const UserForm = () => {
     <div className="mx-auto max-w-3xl space-y-6">
       {/* Header */}
       <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" onClick={() => navigate('/usuarios')}>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => navigate("/usuarios")}
+        >
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <div>
           <h1 className="text-3xl font-bold">
-            {isEdit ? 'Editar Usuário' : 'Novo Usuário'}
+            {isEdit ? "Editar Usuário" : "Novo Usuário"}
           </h1>
           <p className="text-muted-foreground">
-            {isEdit ? 'Atualize as informações do usuário' : 'Preencha os dados do novo usuário'}
+            {isEdit
+              ? "Atualize as informações do usuário"
+              : "Preencha os dados do novo usuário"}
           </p>
         </div>
       </div>
@@ -112,20 +140,41 @@ const UserForm = () => {
       {/* Form */}
       <Card className="p-6">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          {/* Nome Completo */}
-          <div className="space-y-2">
-            <Label htmlFor="nomeCompleto">
-              Nome Completo <span className="text-destructive">*</span>
-            </Label>
-            <Input
-              id="nomeCompleto"
-              {...register('nomeCompleto')}
-              disabled={isEdit}
-              placeholder="Ex: João da Silva"
-            />
-            {errors.nomeCompleto && (
-              <p className="text-sm text-destructive">{errors.nomeCompleto.message}</p>
-            )}
+          {/* Nome completo e Usuário */}
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-2">
+              <Label htmlFor="nomeCompleto">
+                Nome Completo <span className="text-destructive">*</span>
+              </Label>
+              <Input
+                id="nomeCompleto"
+                {...register("nomeCompleto")}
+                disabled={isEdit}
+                placeholder="Ex: João da Silva"
+              />
+              {errors.nomeCompleto && (
+                <p className="text-sm text-destructive">
+                  {errors.nomeCompleto.message}
+                </p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="usuario">
+                Usuário <span className="text-destructive">*</span>
+              </Label>
+              <Input
+                id="usuario"
+                {...register("usuario")}
+                disabled={isEdit}
+                placeholder="Ex: joaogome984"
+              />
+              {errors.usuario && (
+                <p className="text-sm text-destructive">
+                  {errors.usuario.message}
+                </p>
+              )}
+            </div>
           </div>
 
           {/* CPF and Email */}
@@ -136,12 +185,12 @@ const UserForm = () => {
               </Label>
               <Input
                 id="cpf"
-                {...register('cpf')}
+                {...register("cpf")}
                 disabled={isEdit}
                 placeholder="000.000.000-00"
                 onChange={(e) => {
                   const masked = maskCPF(e.target.value);
-                  setValue('cpf', masked);
+                  setValue("cpf", masked);
                 }}
               />
               {errors.cpf && (
@@ -156,11 +205,13 @@ const UserForm = () => {
               <Input
                 id="email"
                 type="email"
-                {...register('email')}
+                {...register("email")}
                 placeholder="exemplo@email.com"
               />
               {errors.email && (
-                <p className="text-sm text-destructive">{errors.email.message}</p>
+                <p className="text-sm text-destructive">
+                  {errors.email.message}
+                </p>
               )}
             </div>
           </div>
@@ -173,15 +224,17 @@ const UserForm = () => {
               </Label>
               <Input
                 id="telefone"
-                {...register('telefone')}
+                {...register("telefone")}
                 placeholder="(00) 00000-0000"
                 onChange={(e) => {
                   const masked = maskPhone(e.target.value);
-                  setValue('telefone', masked);
+                  setValue("telefone", masked);
                 }}
               />
               {errors.telefone && (
-                <p className="text-sm text-destructive">{errors.telefone.message}</p>
+                <p className="text-sm text-destructive">
+                  {errors.telefone.message}
+                </p>
               )}
             </div>
 
@@ -189,7 +242,10 @@ const UserForm = () => {
               <Label htmlFor="cargo">
                 Cargo <span className="text-destructive">*</span>
               </Label>
-              <Select value={cargo} onValueChange={(value: any) => setValue('cargo', value)}>
+              <Select
+                value={cargo}
+                onValueChange={(value: UserRole) => setValue("cargo", value)}
+              >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -197,65 +253,32 @@ const UserForm = () => {
                   <SelectItem value="ATENDENTE">Atendente</SelectItem>
                   <SelectItem value="VETERINARIO">Veterinário</SelectItem>
                   <SelectItem value="ADMINISTRADOR">Administrador</SelectItem>
-                  <SelectItem value="CLIENTE">Cliente/Tutor</SelectItem>
                 </SelectContent>
               </Select>
               {errors.cargo && (
-                <p className="text-sm text-destructive">{errors.cargo.message}</p>
+                <p className="text-sm text-destructive">
+                  {errors.cargo.message}
+                </p>
               )}
             </div>
           </div>
 
           {/* Conditional: Data de Admissão (for employees) */}
-          {!isCliente && (
-            <div className="space-y-2">
-              <Label htmlFor="dataAdmissao">
-                Data de Admissão <span className="text-destructive">*</span>
-              </Label>
-              <Input
-                id="dataAdmissao"
-                type="date"
-                {...register('dataAdmissao')}
-              />
-              {errors.dataAdmissao && (
-                <p className="text-sm text-destructive">{errors.dataAdmissao.message}</p>
-              )}
-            </div>
-          )}
-
-          {/* Conditional: Cliente fields */}
-          {isCliente && (
-            <>
-              <div className="space-y-2">
-                <Label htmlFor="endereco">
-                  Endereço Completo <span className="text-destructive">*</span>
-                </Label>
-                <Input
-                  id="endereco"
-                  {...register('endereco')}
-                  placeholder="Rua, número, bairro, cidade - UF"
-                />
-                {errors.endereco && (
-                  <p className="text-sm text-destructive">{errors.endereco.message}</p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="dataNascimento">
-                  Data de Nascimento <span className="text-destructive">*</span>
-                </Label>
-                <Input
-                  id="dataNascimento"
-                  type="date"
-                  {...register('dataNascimento')}
-                />
-                {errors.dataNascimento && (
-                  <p className="text-sm text-destructive">{errors.dataNascimento.message}</p>
-                )}
-              </div>
-            </>
-          )}
-
+          <div className="space-y-2">
+            <Label htmlFor="dataAdmissao">
+              Data de Admissão <span className="text-destructive">*</span>
+            </Label>
+            <Input
+              id="dataAdmissao"
+              type="date"
+              {...register("dataAdmissao")}
+            />
+            {errors.dataAdmissao && (
+              <p className="text-sm text-destructive">
+                {errors.dataAdmissao.message}
+              </p>
+            )}
+          </div>
           {/* Password (only on create) */}
           {!isEdit && (
             <div className="grid gap-4 sm:grid-cols-2">
@@ -266,11 +289,13 @@ const UserForm = () => {
                 <Input
                   id="senha"
                   type="password"
-                  {...register('senha')}
+                  {...register("senha")}
                   placeholder="Mínimo 8 caracteres"
                 />
                 {errors.senha && (
-                  <p className="text-sm text-destructive">{errors.senha.message}</p>
+                  <p className="text-sm text-destructive">
+                    {errors.senha.message}
+                  </p>
                 )}
               </div>
 
@@ -281,11 +306,13 @@ const UserForm = () => {
                 <Input
                   id="confirmarSenha"
                   type="password"
-                  {...register('confirmarSenha')}
+                  {...register("confirmarSenha")}
                   placeholder="Repita a senha"
                 />
                 {errors.confirmarSenha && (
-                  <p className="text-sm text-destructive">{errors.confirmarSenha.message}</p>
+                  <p className="text-sm text-destructive">
+                    {errors.confirmarSenha.message}
+                  </p>
                 )}
               </div>
             </div>
@@ -296,14 +323,14 @@ const UserForm = () => {
             <Button
               type="button"
               variant="outline"
-              onClick={() => navigate('/usuarios')}
+              onClick={() => navigate("/usuarios")}
               disabled={loading}
             >
               Cancelar
             </Button>
             <Button type="submit" disabled={loading}>
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {isEdit ? 'Atualizar' : 'Cadastrar'}
+              {isEdit ? "Atualizar" : "Cadastrar"}
             </Button>
           </div>
         </form>
