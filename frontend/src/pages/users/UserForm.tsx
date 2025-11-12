@@ -17,9 +17,7 @@ import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
 import { userSchema, type UserFormData } from "@/lib/validators";
 import { maskCPF, maskPhone } from "@/lib/masks";
-import { mockUsersApi } from "@/lib/mockApi";
-import { createUser } from "@/lib/user/create";
-import { updateUser } from "@/lib/user/update";
+import { createUser,updateUser,showUser } from "@/lib/user/requests";
 import { UserRole } from "@/types";
 
 const UserForm = () => {
@@ -54,15 +52,14 @@ const UserForm = () => {
   const loadUser = async (userId: string) => {
     try {
       setInitialLoading(true);
-      const user = await mockUsersApi.getById(userId);
-      setValue("nomeCompleto", user.nomeCompleto);
+      const user = await showUser(userId);
+      setValue("nomeCompleto", user.name);
       setValue("cpf", user.cpf);
       setValue("email", user.email);
-      setValue("telefone", user.telefone);
-      setValue("cargo", user.cargo);
-      if (user.dataAdmissao) setValue("dataAdmissao", user.dataAdmissao);
-      if (user.endereco) setValue("endereco", user.endereco);
-      if (user.dataNascimento) setValue("dataNascimento", user.dataNascimento);
+      setValue("telefone", '12997012128');
+      setValue("cargo", user.role);
+      setValue("dataAdmissao", user.admissionDate);
+      setValue("usuario", 'usuarioexemplo');
     } catch (error) {
       toast.error(error.message || "Erro ao carregar usuário");
       navigate("/usuarios");
@@ -76,7 +73,7 @@ const UserForm = () => {
       setLoading(true);
 
       if (isEdit && id) {
-        await updateUser(+id, {
+        await updateUser(id, {
           admissionDate: data.dataAdmissao,
           email: data.email,
           password: data.senha,

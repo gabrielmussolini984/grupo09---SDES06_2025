@@ -23,8 +23,8 @@ import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
 import { UserRole } from "@/types";
 import ConfirmDialog from "@/components/ConfirmDialog";
-import { ListUserResponse, listUsers } from "@/lib/user/list";
-import { removeUser } from "@/lib/user/remove";
+import { ListUserResponse,  } from "@/lib/user/types";
+import { removeUser,listUsers } from "@/lib/user/requests";
 
 const UserList = () => {
   const navigate = useNavigate();
@@ -189,14 +189,6 @@ const UserList = () => {
 
                     <TableCell>
                       <div className="flex justify-end gap-2">
-                        {/* <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => navigate(`/usuarios/${user.id}`)}
-                          title="Ver detalhes"
-                        >
-                          <Eye className="h-4 w-4" />
-                        </Button> */}
                         <Button
                           variant="ghost"
                           size="icon"
