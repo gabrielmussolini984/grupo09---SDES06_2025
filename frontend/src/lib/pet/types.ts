@@ -30,6 +30,21 @@ export type ListPetResponse = {
   notes: string;
 };
 
+export type ShowPetResponse = {
+  id: string;
+  name: string;
+  species: string;
+  breed: string;
+  age: number;
+  tutorName: string;
+  tutorCpf: string;
+  weight: number;
+  notes: string;
+  sex: string;
+  birthDate: string;
+  color: string;
+};
+
 export type UpdatePetRequest = {
   weight: number;
   color: string;

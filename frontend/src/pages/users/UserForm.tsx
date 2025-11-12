@@ -59,7 +59,7 @@ const UserForm = () => {
       setValue("telefone", '12997012128');
       setValue("cargo", user.role);
       setValue("dataAdmissao", user.admissionDate);
-      setValue("usuario", 'usuarioexemplo');
+      setValue("usuario", user.username);
     } catch (error) {
       toast.error(error.message || "Erro ao carregar usuário");
       navigate("/usuarios");

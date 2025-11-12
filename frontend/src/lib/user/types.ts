@@ -29,6 +29,7 @@ export type ListUserResponse = {
   email: string;
   role: UserRole;
   admissionDate: string;
+  username: string;
 };
 
 // Parameters for updating a user

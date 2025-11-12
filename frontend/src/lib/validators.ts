@@ -121,17 +121,13 @@ export const petSchema = z.object({
     .min(1, "Nome do pet é obrigatório")
     .max(100, "Nome deve ter no máximo 100 caracteres")
     .trim(),
-  especie: z.enum(["CACHORRO", "GATO", "COELHO", "AVE", "ROEDOR", "OUTRO"], {
-    required_error: "Espécie é obrigatória",
-  }),
+  especie: z.string().min(1, "Espécie é obrigatória"),
   raca: z
     .string()
     .min(1, "Raça é obrigatória")
     .max(100, "Raça deve ter no máximo 100 caracteres")
     .trim(),
-  sexo: z.enum(["MACHO", "FEMEA", "INDEFINIDO"], {
-    required_error: "Sexo é obrigatório",
-  }),
+  sexo: z.string().min(1, "Sexo é obrigatório"),
   dataNascimento: z
     .string()
     .min(1, "Data de nascimento é obrigatória")
@@ -155,5 +151,70 @@ export const petSchema = z.object({
   fotoUrl: z.string().optional(),
 });
 
+// Tutor schema
+export const tutorSchema = z
+  .object({
+    name: z
+      .string()
+      .min(1, "Nome é obrigatório")
+      .max(150, "Nome deve ter no máximo 150 caracteres")
+      .trim(),
+    cpf: z
+      .string()
+      .min(1, "CPF é obrigatório")
+      .refine(validateCPF, "CPF inválido"),
+    email: z
+      .string()
+      .min(1, "E-mail é obrigatório")
+      .email("E-mail inválido")
+      .max(255, "E-mail deve ter no máximo 255 caracteres")
+      .trim(),
+    phone: z.preprocess(
+      (val) => (typeof val === "string" ? val.replace(/[^\d]/g, "") : val),
+      z
+        .string()
+        .min(10, "Telefone é obrigatório")
+        .regex(/^\d{10,11}$/, "Telefone deve conter apenas 10 ou 11 dígitos")
+    ),
+    password: z
+      .string()
+      .min(8, "Senha deve ter no mínimo 8 caracteres")
+      .max(20, "Senha deve ter no máximo 20 caracteres")
+      .regex(/[A-Z]/, "Senha deve conter pelo menos uma letra maiúscula")
+      .regex(/[a-z]/, "Senha deve conter pelo menos uma letra minúscula")
+      .regex(/[0-9]/, "Senha deve conter pelo menos um número")
+      .regex(
+        /[^A-Za-z0-9]/,
+        "Senha deve conter pelo menos um caractere especial"
+      )
+      .optional(),
+    confirmPassword: z.string().optional(),
+    birthDate: z
+      .string()
+      // .min(1, "Data de nascimento é obrigatória")
+      .refine((date) => {
+        if (!date) return true;
+        return new Date(date) <= new Date();
+      }, "Data de nascimento não pode ser futura"),
+    address: z
+      .string()
+      .min(1, "Endereço é obrigatório")
+      .max(500, "Endereço deve ter no máximo 500 caracteres")
+      .trim(),
+  })
+  .refine(
+    (data) => {
+      if (data.password && data.password !== data.confirmPassword) {
+        return false;
+      }
+      return true;
+    },
+    {
+      message: "As senhas não coincidem",
+      path: ["confirmPassword"],
+    }
+  );
+
 export type UserFormData = z.infer<typeof userSchema>;
 export type PetFormData = z.infer<typeof petSchema>;
+export type TutorFormData = z.infer<typeof tutorSchema>;

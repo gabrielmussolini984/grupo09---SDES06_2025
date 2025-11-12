@@ -32,7 +32,7 @@ export const listUsers = async (
 export const updateUser = async (
   id: string,
   data: UpdateUserRequest,
-  adminId?: string
+  adminId: string = "1"
 ) => {
   await axios.put(`${USER_URL}/${id}`, data, { params: { adminId } });
 };

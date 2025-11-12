@@ -9,13 +9,15 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card } from '@/components/ui/card';
 import { toast } from 'sonner';
-import { Pet, PetSpecies } from '@/types';
+import {  PetSpecies } from '@/types';
 import { mockPetsApi } from '@/lib/mockApi';
 import ConfirmDialog from '@/components/ConfirmDialog';
+import { listPets, removePet } from '@/lib/pet/requests';
+import { ListPetResponse } from '@/lib/pet/types';
 
 const PetList = () => {
   const navigate = useNavigate();
-  const [pets, setPets] = useState<Pet[]>([]);
+  const [pets, setPets] = useState<ListPetResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   
@@ -33,14 +35,14 @@ const PetList = () => {
   const loadPets = async () => {
     try {
       setLoading(true);
-      const response = await mockPetsApi.list({
-        nome: nameFilter,
-        especie: speciesFilter !== 'ALL' ? speciesFilter : undefined,
-        raca: breedFilter,
-        tutorNome: ownerFilter,
-        tutorCpf: ownerCpfFilter,
+      const response = await listPets({
+        name: nameFilter,
+        species: speciesFilter !== 'ALL' ? speciesFilter : undefined,
+        breed: breedFilter,
+        ownerName: ownerFilter,
+        ownerCpf: ownerCpfFilter,
       });
-      setPets(response.data);
+      setPets(response);
     } catch (error) {
       toast.error('Erro ao carregar pets');
       console.error(error);
@@ -53,10 +55,10 @@ const PetList = () => {
     if (!deleteId) return;
     
     try {
-      await mockPetsApi.delete(deleteId);
-      toast.success('Pet inativado com sucesso');
+      await removePet(deleteId);
+      toast.success('Pet removido com sucesso');
       loadPets();
-    } catch (error: any) {
+    } catch (error) {
       toast.error(error.message || 'Erro ao inativar pet');
     } finally {
       setDeleteId(null);
@@ -157,11 +159,8 @@ const PetList = () => {
                   <TableHead>Pet</TableHead>
                   <TableHead>Espécie</TableHead>
                   <TableHead>Raça</TableHead>
-                  <TableHead>Sexo</TableHead>
                   <TableHead>Idade</TableHead>
-                  <TableHead>Tutor</TableHead>
                   <TableHead>Peso</TableHead>
-                  <TableHead>Status</TableHead>
                   <TableHead className="text-right">Ações</TableHead>
                 </TableRow>
               </TableHeader>
@@ -171,41 +170,19 @@ const PetList = () => {
                     <TableCell>
                       <div className="flex items-center gap-3">
                         <Avatar>
-                          <AvatarImage src={pet.fotoUrl} alt={pet.nome} />
                           <AvatarFallback className="bg-primary/10 text-primary">
-                            {pet.nome.substring(0, 2).toUpperCase()}
+                            {pet.name.substring(0, 2).toUpperCase()}
                           </AvatarFallback>
                         </Avatar>
-                        <span className="font-medium">{pet.nome}</span>
+                        <span className="font-medium">{pet.name}</span>
                       </div>
                     </TableCell>
-                    <TableCell>{pet.especie}</TableCell>
-                    <TableCell>{pet.raca}</TableCell>
-                    <TableCell>
-                      <Badge variant="outline">
-                        {pet.sexo === 'MACHO' && '♂ Macho'}
-                        {pet.sexo === 'FEMEA' && '♀ Fêmea'}
-                        {pet.sexo === 'INDEFINIDO' && 'Indefinido'}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>{calculateAge(pet.dataNascimento)}</TableCell>
-                    <TableCell>{pet.tutor?.nomeCompleto || '-'}</TableCell>
-                    <TableCell>{pet.pesoAtual} kg</TableCell>
-                    <TableCell>
-                      <Badge variant={pet.ativo ? 'default' : 'secondary'}>
-                        {pet.ativo ? 'Ativo' : 'Inativo'}
-                      </Badge>
-                    </TableCell>
+                    <TableCell>{pet.species}</TableCell>
+                    <TableCell>{pet.breed}</TableCell>
+                    <TableCell>{pet.age}</TableCell>
+                    <TableCell>{pet.weight} kg</TableCell>
                     <TableCell>
                       <div className="flex justify-end gap-2">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => navigate(`/pets/${pet.id}`)}
-                          title="Ver detalhes"
-                        >
-                          <Eye className="h-4 w-4" />
-                        </Button>
                         <Button
                           variant="ghost"
                           size="icon"
@@ -219,7 +196,6 @@ const PetList = () => {
                           size="icon"
                           onClick={() => setDeleteId(pet.id)}
                           title="Excluir"
-                          disabled={!pet.ativo}
                         >
                           <Trash2 className="h-4 w-4 text-destructive" />
                         </Button>
@@ -237,9 +213,9 @@ const PetList = () => {
       <ConfirmDialog
         open={!!deleteId}
         onOpenChange={(open) => !open && setDeleteId(null)}
-        title="Inativar pet"
-        description="Tem certeza que deseja inativar este pet? O pet será marcado como inativo mas seus dados serão preservados."
-        confirmText="Inativar"
+        title="Remover pet"
+        description="Tem certeza que deseja remover este pet? O pet será excluído permanentemente e seus dados não poderão ser recuperados."
+        confirmText="Remover"
         onConfirm={handleDelete}
         variant="destructive"
       />

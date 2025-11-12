@@ -5,6 +5,7 @@ import {
   CreatePetRequest,
   ListPetResponse,
   SearchParams,
+  ShowPetResponse,
   UpdatePetRequest,
 } from "./types";
 
@@ -20,8 +21,8 @@ export const listPets = async (
   return response.data;
 };
 
-export const showPet = async (id: string): Promise<ListPetResponse> => {
-  const response = await axios.get<ListPetResponse>(`${PET_URL}/${id}`);
+export const showPet = async (id: string): Promise<ShowPetResponse> => {
+  const response = await axios.get<ShowPetResponse>(`${PET_URL}/${id}`);
   return response.data;
 };
 
