@@ -13,4 +13,6 @@ public class UserResponse {
   private String email;
   private UserRole role;
   private LocalDate admissionDate;
+  private String phone;
+  private String username;
 }

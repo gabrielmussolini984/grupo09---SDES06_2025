@@ -4,7 +4,6 @@ import br.com.unifei.clinicproject.dtos.request.TutorFilterRequest;
 import br.com.unifei.clinicproject.dtos.request.TutorRequest;
 import br.com.unifei.clinicproject.dtos.request.TutorUpdateRequest;
 import br.com.unifei.clinicproject.dtos.response.TutorResponse;
-import br.com.unifei.clinicproject.dtos.response.UserResponse;
 import br.com.unifei.clinicproject.entities.TutorEntity;
 import br.com.unifei.clinicproject.entities.UserEntity;
 import br.com.unifei.clinicproject.enums.UserRole;
