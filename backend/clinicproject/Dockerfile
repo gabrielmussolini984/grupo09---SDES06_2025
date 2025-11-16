@@ -8,6 +8,9 @@ RUN gradle clean bootJar --no-daemon
 FROM eclipse-temurin:17-jdk
 WORKDIR /app
 
+# Variável de ambiente
+ENV FILE_UPLOAD_DIR=/app/uploads
+
 # Copia o .jar gerado pelo Gradle
 COPY --from=builder /app/build/libs/*.jar app.jar
 
