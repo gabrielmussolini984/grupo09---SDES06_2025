@@ -12,7 +12,7 @@ import {
 const PET_URL = `${BASE_URL}/pets`;
 
 export const listPets = async (
-  params: SearchParams
+  params?: SearchParams
 ): Promise<ListPetResponse[]> => {
   const filteredParams = stripUndefined(params);
   const response = await axios.get<ListPetResponse[]>(`${PET_URL}`, {

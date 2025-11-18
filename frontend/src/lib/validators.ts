@@ -218,3 +218,24 @@ export const tutorSchema = z
 export type UserFormData = z.infer<typeof userSchema>;
 export type PetFormData = z.infer<typeof petSchema>;
 export type TutorFormData = z.infer<typeof tutorSchema>;
+
+export const medicalRecordSchema = z.object({
+  petId: z.string().min(1, "Pet é obrigatório"),
+  veterinarianId: z.string().min(1, "Veterinário é obrigatório"),
+  consultationDate: z.string().min(1, "Data da consulta é obrigatória"),
+  diagnosis: z
+    .string()
+    .min(1, "Diagnóstico é obrigatório")
+    .max(500, "Diagnóstico deve ter no máximo 500 caracteres"),
+  prescription: z
+    .string()
+    .min(1, "Prescrição é obrigatória")
+    .max(1000, "Prescrição deve ter no máximo 1000 caracteres"),
+  notes: z
+    .string()
+    .max(1000, "Observações devem ter no máximo 1000 caracteres")
+    .optional(),
+  files: z.any().optional(),
+});
+
+export type MedicalRecordFormData = z.infer<typeof medicalRecordSchema>;

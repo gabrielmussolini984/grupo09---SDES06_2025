@@ -42,16 +42,6 @@ test("Teste Usuarios", async ({ page }) => {
   await page.getByRole("textbox", { name: "E-mail *" }).dblclick();
   await page.getByRole("textbox", { name: "E-mail *" }).click();
   await page.getByRole("textbox", { name: "E-mail *" }).press("ArrowLeft");
-  await page.getByRole("textbox", { name: "E-mail *" }).press("ArrowLeft");
-  await page.getByRole("textbox", { name: "E-mail *" }).press("ArrowLeft");
-  await page.getByRole("textbox", { name: "E-mail *" }).press("ArrowLeft");
-  await page.getByRole("textbox", { name: "E-mail *" }).press("ArrowLeft");
-  await page.getByRole("textbox", { name: "E-mail *" }).press("ArrowLeft");
-  await page.getByRole("textbox", { name: "E-mail *" }).press("ArrowLeft");
-  await page.getByRole("textbox", { name: "E-mail *" }).press("ArrowLeft");
-  await page.getByRole("textbox", { name: "E-mail *" }).press("ArrowLeft");
-  await page.getByRole("textbox", { name: "E-mail *" }).press("ArrowLeft");
-  await page.getByRole("textbox", { name: "E-mail *" }).press("ArrowLeft");
   await page.getByRole("textbox", { name: "E-mail *" }).press("ArrowRight");
   await page.getByRole("textbox", { name: "E-mail *" }).press("ArrowRight");
   await page
