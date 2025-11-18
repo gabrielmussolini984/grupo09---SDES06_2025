@@ -221,7 +221,7 @@ export type TutorFormData = z.infer<typeof tutorSchema>;
 
 export const medicalRecordSchema = z.object({
   petId: z.string().min(1, "Pet é obrigatório"),
-  veterinarianId: z.string().min(1, "Veterinário é obrigatório"),
+  veterinarianId: z.string(),
   consultationDate: z.string().min(1, "Data da consulta é obrigatória"),
   diagnosis: z
     .string()

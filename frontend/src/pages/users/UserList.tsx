@@ -66,7 +66,7 @@ const UserList = () => {
       toast.success("Usuário removido com sucesso");
       loadUsers();
     } catch (error) {
-      toast.error(error.message || "Erro ao inativar usuário");
+      toast.error(error.message || "Erro ao remover usuário");
     } finally {
       setDeleteId(null);
     }

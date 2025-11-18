@@ -51,7 +51,7 @@ export default function MedicalRecordList() {
         startDate: startDateFilter || undefined,
         endDate: endDateFilter || undefined,
         diagnosisKeyword: diagnosisFilter || undefined,
-      });
+      }, '');
       setRecords(response);
     } catch (error) {
       toast({
@@ -187,13 +187,6 @@ export default function MedicalRecordList() {
                   <TableCell className="max-w-xs truncate">{record.notes || '-'}</TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => navigate(`/historico-medico/${record.id}`)}
-                      >
-                        <Eye className="h-4 w-4" />
-                      </Button>
                       <Button
                         variant="ghost"
                         size="icon"

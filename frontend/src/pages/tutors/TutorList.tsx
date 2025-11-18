@@ -55,7 +55,7 @@ const TutorList = () => {
       toast.success('Tutor removido com sucesso');
       loadTutors();
     } catch (error) {
-      toast.error(error.message || 'Erro ao inativar tutor');
+      toast.error(error.message || 'Erro ao remover tutor');
     } finally {
       setDeleteId(null);
     }

@@ -44,7 +44,7 @@ const UserDetails = () => {
       toast.success('Usuário inativado com sucesso');
       navigate('/usuarios');
     } catch (error) {
-      toast.error(error.message || 'Erro ao inativar usuário');
+      toast.error(error.message || 'Erro ao remover usuário');
     } finally {
       setShowDeleteDialog(false);
     }
@@ -97,7 +97,7 @@ const UserDetails = () => {
             disabled={!user.ativo}
           >
             <Trash2 className="mr-2 h-4 w-4" />
-            Inativar
+            Remover
           </Button>
         </div>
       </div>
@@ -169,9 +169,9 @@ const UserDetails = () => {
       <ConfirmDialog
         open={showDeleteDialog}
         onOpenChange={setShowDeleteDialog}
-        title="Inativar usuário"
-        description="Tem certeza que deseja inativar este usuário? O usuário será marcado como inativo mas seus dados serão preservados."
-        confirmText="Inativar"
+        title="Remover usuário"
+        description="Tem certeza que deseja remover este usuário? O usuário será marcado como inativo mas seus dados serão preservados."
+        confirmText="Remover"
         onConfirm={handleDelete}
         variant="destructive"
       />

@@ -59,7 +59,7 @@ const PetList = () => {
       toast.success('Pet removido com sucesso');
       loadPets();
     } catch (error) {
-      toast.error(error.message || 'Erro ao inativar pet');
+      toast.error(error.message || 'Erro ao remover pet');
     } finally {
       setDeleteId(null);
     }
@@ -183,6 +183,14 @@ const PetList = () => {
                     <TableCell>{pet.weight} kg</TableCell>
                     <TableCell>
                       <div className="flex justify-end gap-2">
+                         <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => navigate(`/pets/${pet.id}`)}
+                          title="Ver detalhes"
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
                         <Button
                           variant="ghost"
                           size="icon"

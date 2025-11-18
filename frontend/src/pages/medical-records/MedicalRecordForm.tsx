@@ -20,7 +20,7 @@ import { createMedicalRecord, showMedicalRecord, updateMedicalRecord } from '@/l
 type FormData = z.infer<typeof medicalRecordSchema>;
 
 export default function MedicalRecordForm() {
-  const { id } = useParams();
+  const { id, petId } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
   const isEditing = !!id;
@@ -76,13 +76,14 @@ export default function MedicalRecordForm() {
   };
 
   const loadRecord = async () => {
-    if (!id) return;
+    if (!id || !petId) return;
     
     setLoading(true);
     try {
-      const record = await showMedicalRecord(id);
+      const record = await showMedicalRecord(id, petId);
       form.reset({
-        veterinarianId: record.veterinarianId,
+        petId,
+        veterinarianId: null,
         consultationDate: record.consultationDate,
         diagnosis: record.diagnosis,
         prescription: record.prescription,
@@ -141,7 +142,7 @@ export default function MedicalRecordForm() {
           description: 'Registro médico criado com sucesso',
         });
       }
-      navigate('/historico-medico');
+      navigate('/pets/' + data.petId);
     } catch (error) {
       toast({
         title: 'Erro',

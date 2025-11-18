@@ -19,6 +19,12 @@ import PetForm from "./pages/pets/PetForm";
 import TutorList from "./pages/tutors/TutorList";
 import TutorForm from "./pages/tutors/TutorForm";
 
+// Medical Record pages
+import MedicalRecordList from "./pages/medical-records/MedicalRecordList";
+import MedicalRecordForm from "./pages/medical-records/MedicalRecordForm";
+import PetDetails from "./pages/pets/PetDetails";
+import MedicalRecordDetails from "./pages/medical-records/MedicalRecordDetails";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -40,11 +46,18 @@ const App = () => (
             <Route path="/pets" element={<PetList />} />
             <Route path="/pets/novo" element={<PetForm />} />
             <Route path="/pets/:id/editar" element={<PetForm />} />
+            <Route path="/pets/:id" element={<PetDetails />} />
 
              {/* Tutor routes */}
             <Route path="/tutores" element={<TutorList />} />
             <Route path="/tutores/novo" element={<TutorForm />} />
             <Route path="/tutores/:id/editar" element={<TutorForm />} />
+
+            {/* Medical Record routes */}
+            <Route path="/historico-medico" element={<MedicalRecordList />} />
+            <Route path="/historico-medico/novo" element={<MedicalRecordForm />} />
+            <Route path="/historico-medico/:id/:petId/editar" element={<MedicalRecordForm />} />
+            <Route path="/historico-medico/:id/:petId" element={<MedicalRecordDetails />} />
             
             {/* 404 catch-all */}
             <Route path="*" element={<NotFound />} />
