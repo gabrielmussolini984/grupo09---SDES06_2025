@@ -204,3 +204,34 @@ test("Teste Pet", async ({ page }) => {
   await page.getByRole("button", { name: "Excluir" }).first().click();
   await page.getByRole("button", { name: "Remover" }).click();
 });
+
+test.only("Teste Relatorio Medico", async ({ page }) => {
+  await page.goto("http://localhost:8081/");
+  await page.getByRole("link", { name: "Pets", exact: true }).click();
+  await page.getByRole("button", { name: "Ver detalhes" }).click();
+  await page.getByRole("button", { name: "Novo Registro" }).click();
+  await page.getByRole("combobox", { name: "Pet *" }).click();
+  await page.getByRole("option", { name: "Rex" }).click();
+  await page
+    .getByRole("textbox", { name: "Data da Consulta *" })
+    .fill("2025-11-01");
+  await page.getByRole("textbox", { name: "Diagnóstico *" }).click();
+  await page.getByRole("textbox", { name: "Diagnóstico *" }).fill("GRIPADO");
+  await page.getByRole("textbox", { name: "Diagnóstico *" }).press("Tab");
+  await page
+    .getByRole("textbox", { name: "Prescrição *" })
+    .fill("Dipirona 20MG");
+  await page.getByRole("textbox", { name: "Observações" }).click();
+  await page.getByRole("textbox", { name: "Observações" }).fill("Nenhuma");
+  await page.getByRole("button", { name: "Salvar" }).click();
+  await page.getByRole("combobox", { name: "Veterinário *" }).click();
+  await page
+    .getByLabel("João Veterinário")
+    .getByText("João Veterinário")
+    .click();
+  await page
+    .getByRole("region", { name: "Notifications (F8)" })
+    .getByRole("button")
+    .click();
+  await page.getByRole("button", { name: "Salvar" }).click();
+});
