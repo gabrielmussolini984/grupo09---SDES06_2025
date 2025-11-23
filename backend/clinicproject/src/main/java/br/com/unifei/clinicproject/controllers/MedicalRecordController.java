@@ -11,9 +11,19 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -77,5 +87,50 @@ public class MedicalRecordController {
     medicalRecordService.updateRecord(id, dto, files, veterinarianId);
 
     return ResponseEntity.ok("Medical record updated successfully!");
+  }
+
+  @GetMapping("/{id}")
+  public ResponseEntity<MedicalRecordResponse> getRecordById(@PathVariable String id) {
+    MedicalRecordResponse record = medicalRecordService.findById(id);
+
+    return ResponseEntity.ok(record);
+  }
+
+  @GetMapping("/attachments/{id}")
+  public ResponseEntity<Resource> getRecordAttachmentsAsZip(@PathVariable String id)
+      throws IOException {
+
+    MedicalRecordResponse record = medicalRecordService.findById(id);
+
+    if (record.getAttachmentPaths() == null || record.getAttachmentPaths().isEmpty()) {
+      return ResponseEntity.noContent().build();
+    }
+
+    ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+    ZipOutputStream zipStream = new ZipOutputStream(byteStream);
+
+    for (String path : record.getAttachmentPaths()) {
+
+      Path fullPath = Paths.get(path);
+      if (!Files.exists(fullPath)) continue;
+
+      String filename = fullPath.getFileName().toString();
+
+      zipStream.putNextEntry(new ZipEntry(filename));
+      Files.copy(fullPath, zipStream);
+      zipStream.closeEntry();
+    }
+
+    zipStream.finish();
+    zipStream.close();
+
+    ByteArrayResource zipResource = new ByteArrayResource(byteStream.toByteArray());
+
+    return ResponseEntity.ok()
+        .header(
+            HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"attachments_" + id + ".zip\"")
+        .contentType(MediaType.APPLICATION_OCTET_STREAM)
+        .contentLength(zipResource.contentLength())
+        .body(zipResource);
   }
 }

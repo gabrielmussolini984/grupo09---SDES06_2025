@@ -3,6 +3,7 @@ package br.com.unifei.clinicproject.services;
 import br.com.unifei.clinicproject.dtos.request.MedicalRecordRequest;
 import br.com.unifei.clinicproject.dtos.request.MedicalRecordUpdateRequest;
 import br.com.unifei.clinicproject.dtos.response.MedicalRecordResponse;
+import br.com.unifei.clinicproject.entities.MedicalRecordAttachmentEntity;
 import br.com.unifei.clinicproject.entities.MedicalRecordEntity;
 import br.com.unifei.clinicproject.entities.PetEntity;
 import br.com.unifei.clinicproject.entities.UserEntity;
@@ -11,6 +12,7 @@ import br.com.unifei.clinicproject.mappers.MedicalMapper;
 import br.com.unifei.clinicproject.repositories.MedicalRecordRepository;
 import br.com.unifei.clinicproject.repositories.PetRepository;
 import br.com.unifei.clinicproject.repositories.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.transaction.Transactional;
 import java.time.LocalDate;
@@ -113,19 +115,23 @@ public class MedicalRecordService {
             .consultationDate(dto.getConsultationDate())
             .diagnosis(dto.getDiagnosis())
             .prescription(dto.getPrescription())
-            .notes(dto.getNotes());
+            .notes(dto.getNotes())
+            .build();
 
-    // Save files
-    if (attachments != null) {
-      List<String> savedFiles = new ArrayList<>();
+    if (attachments != null && !attachments.isEmpty()) {
       for (MultipartFile file : attachments) {
-        String filename = fileStorageService.saveFile(file);
-        savedFiles.add(filename);
+        String savedPath = fileStorageService.saveFile(file);
+
+        MedicalRecordAttachmentEntity attachment = new MedicalRecordAttachmentEntity();
+        attachment.setFileName(file.getOriginalFilename());
+        attachment.setFilePath(savedPath);
+        attachment.setMedicalRecord(record);
+
+        record.getAttachments().add(attachment);
       }
-      record.attachments(savedFiles);
     }
 
-    medicalRecordRepository.save(record.build());
+    medicalRecordRepository.save(record);
 
     log.info("Medical record saved successfully!");
   }
@@ -140,35 +146,52 @@ public class MedicalRecordService {
             .findById(id)
             .orElseThrow(() -> new RuntimeException("Record not found"));
 
-    // todo impl login
-    //
-    //    if (!entity.getVeterinarian().getId().equals(loggedVetId)) {
-    //      throw new IllegalAccessException(
-    //              "Only the veterinarian who created the record can edit it."
-    //      );
-    //    }
+    // Regra de negócio: somente o veterinário responsável pode editar
+    /*
+    if (!entity.getVeterinarian().getId().equals(loggedVetId)) {
+        throw new IllegalAccessException(
+                "Only the veterinarian who created the record can edit it."
+        );
+    }
+    */
 
+    // Atualiza campos permitidos
     if (dto.getDiagnosis() != null) entity.setDiagnosis(dto.getDiagnosis());
     if (dto.getPrescription() != null) entity.setPrescription(dto.getPrescription());
     if (dto.getNotes() != null) entity.setNotes(dto.getNotes());
 
-    if (newFiles != null && !newFiles.isEmpty()) {
-      List<String> savedFiles = new ArrayList<>();
-      for (MultipartFile file : newFiles) {
-        String filename = fileStorageService.saveFile(file);
-        savedFiles.add(filename);
-      }
-
-      if (entity.getAttachments() == null) {
-        entity.setAttachments(new ArrayList<>());
-      }
-
-      entity.getAttachments().addAll(savedFiles);
+    // Garante que a lista de anexos está inicializada
+    if (entity.getAttachments() == null) {
+      entity.setAttachments(new ArrayList<>());
     }
 
+    // Adiciona novos anexos (sem excluir antigos!)
+    if (newFiles != null && !newFiles.isEmpty()) {
+      for (MultipartFile file : newFiles) {
+        String savedPath = fileStorageService.saveFile(file);
+
+        MedicalRecordAttachmentEntity attachment = new MedicalRecordAttachmentEntity();
+        attachment.setFileName(file.getOriginalFilename());
+        attachment.setFilePath(savedPath);
+        attachment.setMedicalRecord(entity);
+
+        entity.getAttachments().add(attachment);
+      }
+    }
+
+    // Registro de auditoria da edição
     entity.setLastModifiedDate(OffsetDateTime.now());
     entity.setLastModifiedBy(loggedVetId);
 
     medicalRecordRepository.save(entity);
+  }
+
+  public MedicalRecordResponse findById(String id) {
+    MedicalRecordEntity record =
+        medicalRecordRepository
+            .findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("Record not found with id: " + id));
+
+    return mapper.toResponseDto(record);
   }
 }

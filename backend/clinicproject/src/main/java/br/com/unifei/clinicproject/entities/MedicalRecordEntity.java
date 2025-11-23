@@ -46,10 +46,9 @@ public class MedicalRecordEntity {
   @Column(name = "NOTES", length = 1000)
   private String notes;
 
-  @ElementCollection
-  @CollectionTable(name = "MEDICAL_RECORD_FILES", joinColumns = @JoinColumn(name = "RECORD_ID"))
-  @Column(name = "FILE_URL")
-  private List<String> attachments = new ArrayList<>();
+  @Builder.Default
+  @OneToMany(mappedBy = "medicalRecord", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<MedicalRecordAttachmentEntity> attachments = new ArrayList<>();
 
   @Column(name = "LAST_MODIFIED_DATE")
   private OffsetDateTime lastModifiedDate;

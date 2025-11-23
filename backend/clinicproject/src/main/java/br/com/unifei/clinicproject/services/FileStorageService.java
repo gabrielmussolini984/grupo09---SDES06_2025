@@ -37,12 +37,12 @@ public class FileStorageService {
         return null;
       }
 
-      String filename = UUID.randomUUID() + "_" + file.getOriginalFilename();
-      Path destination = this.root.resolve(filename);
+      String filename = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+      Path path = this.root.resolve(filename);
 
-      Files.copy(file.getInputStream(), destination, StandardCopyOption.REPLACE_EXISTING);
+      Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
 
-      return filename;
+      return path.toString();
 
     } catch (Exception e) {
       throw new RuntimeException("Could not save file: " + file.getOriginalFilename(), e);
